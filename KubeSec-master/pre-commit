@@ -16,9 +16,9 @@ else
 	against=$(git hash-object -t tree /dev/null)
 fi
 
-if [ ! -d "KubeSec-master/bandit_scanning" ]
+if [ ! -d "./bandit_scanning" ]
 then
-	mkdir "KubeSec-Master/bandit_scanning"
+	mkdir "./bandit_scanning"
 fi
-bandit -r -f csv -o "KubeSec-Master/bandit_scanning/results.csv" .
+bandit -r -f csv -o "./bandit_scanning/results.csv" .
 exit 0
