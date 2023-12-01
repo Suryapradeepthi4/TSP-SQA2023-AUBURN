@@ -3,7 +3,7 @@ Akond Rahman
 April 30, 2021 
 Placeholder to save test constants
 
-Simple change does this do anything
+Does this do anything
 '''
 
 _test_yaml          = 'TEST_ARTIFACTS/dataimage.airflowimage.manifests.deployment.yaml'
