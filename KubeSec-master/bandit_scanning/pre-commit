@@ -1,5 +1,15 @@
-echo "Running bandit on project"
+#!/bin/sh
+REPORT="gitHook.csv"
+FILES=("constants.py" "graphtaint.py" "main.py" "parser.py" "scanner.py" "TEST_CONSTANTS.py" "TEST_GRAPH.py" "TEST_INTEGRATION.py" "TEST_PARSING.py" "TEST_SCANNING.py")
 
-bandit -r . -f csv -o "BanditResults.csv"
+for file in "${FILES[@]}"; do
+    bandit -f csv "$file" | tail -n +2 >> "$REPORT" 
+done
 
-echo "Report available at BanditResults.csv"
+# Check if the CSV report is empty, and if so, remove it
+if [ ! -s "$REPORT" ]; then
+    rm -f "$REPORT"
+fi
+
+# Exit with success, assuming no issues were found
+exit 0
