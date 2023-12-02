@@ -1,7 +1,7 @@
 import logging
 
 def create_helper(): 
-    fileName  = '2023-11-09.log' 
+    fileName  = 'TSPlog.log' 
     formatStr = '%(asctime)s %(message)s'
     logging.basicConfig(format=formatStr, filename=fileName, level=logging.INFO)
     return logging.getLogger('team-TPS-logger')
