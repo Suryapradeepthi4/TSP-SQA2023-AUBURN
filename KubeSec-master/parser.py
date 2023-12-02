@@ -33,6 +33,8 @@ def checkIfWeirdYAML(yaml_script):
 
 
 def keyMiner(dic_, value):
+    
+
   '''
   If you give a value, then this function gets the corresponding key, and the keys that call the key 
   i.e. the whole hierarchy
@@ -161,13 +163,13 @@ def checkParseError( path_script ):
             print( constants.YAML_SKIPPING_TEXT  )
             logger.info("UnicodeDecodeError found, \"{}\" in file \"{}\"".format(str(err_), str(path_script)))
     if flag:
-        logger.info("No error found in file \"{}\"".format(str(path_script)))
+        logger.info("No error found \"{}\"".format(str(path_script)))
     return flag
 
 def loadMultiYAML( script_ ):
     dicts2ret = []
     logger = logging_helper.create_helper()
-    logger.info("Loading file as MultiYAML: {}".format(str(script_)))
+    logger.info("Loading file: MultiYAML: {}".format(str(script_)))
     with open(script_, constants.FILE_READ_FLAG  ) as yml_content :
         yaml = ruamel.yaml.YAML()
         yaml.default_flow_style = False      
@@ -191,10 +193,10 @@ def loadMultiYAML( script_ ):
             # for debugging purposes
 
             path = find_json_path_keys(dicts2ret) #, key_jsonpath_mapping
-            logger.info("loadMultiYAML debugging: find json path keys: {}".format(str(path)))
+            logger.info("loadMultiYAML debugging: find json keys: {}".format(str(path)))
             # print(path)
             updated_path = update_json_paths(path)
-            logger.info("loadMultiYAML debugging: update json paths: {}".format(str(updated_path)))
+            logger.info("loadMultiYAML debugging: updating json path: {}".format(str(updated_path)))
             # print(updated_path)
             # print("-------------------HERE IS THE MAPPING---------------")
             # for key in key_jsonpath_mapping:
@@ -208,11 +210,14 @@ def loadMultiYAML( script_ ):
             #     print(type(d))
                 
         #print(dicts2ret)
-    logger.info("Loading file as MultiYAML resulted in {} dictionaries".format(len(dicts2ret)))
+    logger.info("Loading file: MultiYAML resulted in {} dictionaries".format(len(dicts2ret)))
     return dicts2ret
 
 
 def count_initial_comment_line (filepath):
+
+    logger = logging_helper.create_helper()
+    logger.info("Loading file: MultiYAML: {}".format(str(script_)))
     initial_comment_line = 0
     comment_found = False
     # calculates initial line before the comments begin in the file such as empty lines, '---'
@@ -234,6 +239,7 @@ def count_initial_comment_line (filepath):
                 break
         if comment_found is False:
             initial_comment_line = 0
+    logger.info("Loading file: MultiYAML results in {} dictionaries".format(len(dicts2ret)))
     return initial_comment_line
 
 
@@ -326,13 +332,14 @@ def update_json_paths (paths):
 
 def show_line_for_paths(  filepath, key): #key_jsonpath_mapping is a global dictionary
     line_number = count_initial_comment_line(filepath)
+
+    logger = logging_helper.create_helper()
+    logger.info("Check file \"{}\" with key \"{}\", line number {}".format(str(filepath), str(key), str(line_number)))
+
     """
     input: provide  JSON_PATH dictionary and the key
     output:  line of appearance of the key in the file
     """
-    logger = logging_helper.create_helper()
-    logger.info("Checking file \"{}\" with key \"{}\", line number {}".format(str(filepath), str(key), str(line_number)))
-
     env_PATH = r"C:\ProgramData\Chocolatey\bin"
     lines = []
     adjusted_lines = []
@@ -340,7 +347,7 @@ def show_line_for_paths(  filepath, key): #key_jsonpath_mapping is a global dict
     # for k in key_jsonpath_mapping:
     #     print("Key--->",k, "Value--->",key_jsonpath_mapping[k])
     if key_jsonpath_mapping.get(key) is not None:
-        logger.info("Found mapping for key {}: {}".format(str(key), str(key_jsonpath_mapping[key])))
+        logger.info("Found mapping for keys {}: {}".format(str(key), str(key_jsonpath_mapping[key])))
         if isinstance(key_jsonpath_mapping[key], list):
             for i in key_jsonpath_mapping[key]:
                 #print(i)

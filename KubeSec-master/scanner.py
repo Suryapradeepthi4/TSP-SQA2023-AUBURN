@@ -212,7 +212,7 @@ def scanForOverPrivileges(script_path):
         '''
         # print(just_keys) 
         if ( constants.PRIVI_KW in just_keys ) and ( constants.DEAMON_KW not in kind_values  ) :
-            logger.info("Scanning {} keys for over-privelages: [{}]".format(len(just_keys), ", ".join(just_keys)))
+            logger.info("Searching for over-privelages: [{}]".format(len(just_keys), ", ".join(just_keys)))
             privilege_values = []
             parser.getValsFromKey( yaml_dict, constants.PRIVI_KW , privilege_values )
             # print(privilege_values) 
@@ -221,7 +221,7 @@ def scanForOverPrivileges(script_path):
                         key_lis_holder = parser.keyMiner(yaml_dict, value_ ) 
                         # print( key_lis_holder )
                         if(constants.CONTAINER_KW in key_lis_holder) and (constants.SECU_CONT_KW in key_lis_holder) and (constants.PRIVI_KW in key_lis_holder):
-                            logger.info("Found overprivelaged key path: [{}]".format(", ".join(key_lis_holder)))
+                            logger.info("Overprivelaged key path: [{}]".format(", ".join(key_lis_holder)))
                             key_count += 1
                             privi_dict_return[key_count] = value_, key_lis_holder 
                             line_number = parser.show_line_for_paths(script_path, constants.PRIVI_KW)
