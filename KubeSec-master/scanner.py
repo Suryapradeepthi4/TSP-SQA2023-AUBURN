@@ -12,6 +12,7 @@ import numpy as np
 import json
 from sarif_om import *
 from jschema_to_python.to_json import to_json
+import logging_helper
 
 '''Global SarifLog Object definition and Rule definition for SLI-KUBE. Rule IDs are ordered by the sequence as it appears in the TOSEM paper'''
 
@@ -186,6 +187,7 @@ def scanForOverPrivileges(script_path):
     key_count , privi_dict_return = 0, {} 
     kind_values = [] 
     checkVal = parser.checkIfValidK8SYaml( script_path )
+    logger = logging_helper.create_helper()
     if(checkVal): 
         dict_as_list = parser.loadMultiYAML( script_path )
         yaml_dict    = parser.getSingleDict4MultiDocs( dict_as_list )
@@ -210,6 +212,7 @@ def scanForOverPrivileges(script_path):
         '''
         # print(just_keys) 
         if ( constants.PRIVI_KW in just_keys ) and ( constants.DEAMON_KW not in kind_values  ) :
+            logger.info("Scanning {} keys for over-privelages: [{}]".format(len(just_keys), ", ".join(just_keys)))
             privilege_values = []
             parser.getValsFromKey( yaml_dict, constants.PRIVI_KW , privilege_values )
             # print(privilege_values) 
@@ -218,6 +221,7 @@ def scanForOverPrivileges(script_path):
                         key_lis_holder = parser.keyMiner(yaml_dict, value_ ) 
                         # print( key_lis_holder )
                         if(constants.CONTAINER_KW in key_lis_holder) and (constants.SECU_CONT_KW in key_lis_holder) and (constants.PRIVI_KW in key_lis_holder):
+                            logger.info("Found overprivelaged key path: [{}]".format(", ".join(key_lis_holder)))
                             key_count += 1
                             privi_dict_return[key_count] = value_, key_lis_holder 
                             line_number = parser.show_line_for_paths(script_path, constants.PRIVI_KW)
@@ -226,6 +230,7 @@ def scanForOverPrivileges(script_path):
                                 location = Location(physical_location=PhysicalLocation(artifact_location=ArtifactLocation(uri=script_path),region = Region(start_line =line)))
                                 result.locations = [location]
                                 run.results.append(result)
+    logger.info("Found {} over-privelaged keys".format(key_count))
     return privi_dict_return 
 
 def getItemFromSecret( dict_sec, pos ): 
@@ -632,8 +637,11 @@ def scanDockerSock(path_script ):
     return dic  
 
 def runScanner(dir2scan):
+    logging = logging_helper.create_helper()
+    logging.info("Scanning  directory: {}".format(dir2scan))
     all_content   = [] 
     all_yml_files = getYAMLFiles(dir2scan)
+    logging.info("Found {} YAML files".format(len(all_yml_files)))
     val_cnt       = 0 
     for yml_ in all_yml_files:
         '''
@@ -645,6 +653,7 @@ def runScanner(dir2scan):
                 # print (" \n\n--------------- FILE RUNNING NOW---------------")
                 # print (yml_)
                 # print("---------------############################### ------\n\n\n")
+                logging.info("Scanning YAML: {}".format(yml_))
                 helm_flag             = parser.checkIfValidHelm(yml_)
                 k8s_flag              = parser.checkIfValidK8SYaml(yml_)
                 if (helm_flag):
@@ -726,16 +735,18 @@ def runScanner(dir2scan):
 
                 all_content.append( ( dir2scan, yml_, within_secret_, templ_secret_, valid_taint_secr, valid_taint_privi, http_dict, absentSecuContextDict, defaultNameSpaceDict, absentResourceDict, rollingUpdateDict, absentNetPolicyDic, pid_dic, ipc_dic, dockersock_dic, host_net_dic, cap_sys_dic, host_alias_dic, allow_privi_dic, unconfied_seccomp_dict, cap_module_dic, k8s_flag, helm_flag ) )
             else:
+                logging.info("Invalid YAML: {}".format(yml_))
                 print("Invalid YAML --> ",yml_)
                 invalid_yaml.append(yml_)
         else:
+            logging.info("Wierd YAML: {}".format(yml_))
             print(" Weird YAML --> ",yml_)
             weird_yaml.append(yml_)
 
         sarif_json = to_json(sarif_log)
         #print(sarif_json)       
 
-
+    logging.info("Retained {} YAML file contents".format(len(all_content)))
     return all_content, sarif_json
 
 
